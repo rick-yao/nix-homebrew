@@ -9,7 +9,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: DeterminateSystems/nix-installer-action@main
       - id: set-matrix
         name: Generate Nix Matrix
@@ -24,7 +24,7 @@ jobs:
     strategy:
       matrix: ${{fromJSON(needs.nix-matrix.outputs.matrix)}}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: DeterminateSystems/nix-installer-action@main
 
       - name: Set up /run for nix-darwin
