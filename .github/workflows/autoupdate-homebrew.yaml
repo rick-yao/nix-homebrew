@@ -22,7 +22,7 @@ jobs:
       - name: Check for updates
         id: check
         run: |
-          CURRENT_VERSION=$(grep -oP 'github:Homebrew/brew/\K[0-9.]+' flake.nix)
+          CURRENT_VERSION=$(perl -nle 'print $1 if /github:Homebrew\/brew\/([0-9.]+)/' flake.nix)
           echo "Current version: $CURRENT_VERSION"
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
 
@@ -43,7 +43,7 @@ jobs:
         run: |
           NEW_VERSION="${{ steps.check.outputs.latest_version }}"
           
-          sed -i "s|github:Homebrew/brew/[0-9.]*|github:Homebrew/brew/$NEW_VERSION|" flake.nix
+          perl -pi -e "s|github:Homebrew/brew/[0-9.]+|github:Homebrew/brew/$NEW_VERSION|" flake.nix
           
           nix flake lock --update-input brew-src
           
