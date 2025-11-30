@@ -21,19 +21,27 @@ jobs:
 
       - name: Check for updates
         id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           CURRENT_VERSION=$(perl -nle 'print $1 if /github:Homebrew\/brew\/([0-9.]+)/' flake.nix)
           echo "Current version: $CURRENT_VERSION"
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
 
-          LATEST_VERSION=$(curl -s https://api.github.com/repos/Homebrew/brew/releases/latest | jq -r .tag_name)
-          echo "Latest version: $LATEST_VERSION"
+          LATEST_VERSION=$(gh api repos/Homebrew/brew/releases/latest --jq .tag_name)
+          echo "Latest version raw: $LATEST_VERSION"
+
+          if [ -z "$LATEST_VERSION" ] || [ "$LATEST_VERSION" = "null" ]; then
+            echo "Error: Failed to fetch latest version from GitHub API."
+            gh api repos/Homebrew/brew/releases/latest || true
+            exit 1
+          fi
 
           if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
             echo "Already up to date."
             echo "updated=false" >> $GITHUB_OUTPUT
           else
-            echo "New version detected!"
+            echo "New version detected: $LATEST_VERSION"
             echo "updated=true" >> $GITHUB_OUTPUT
             echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
           fi
