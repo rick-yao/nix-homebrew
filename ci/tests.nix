@@ -47,6 +47,7 @@ let
             config = {
               documentation.enable = false;
               system.stateVersion = 6;
+              nix.enable = false;
               nix-homebrew = {
                 user = lib.mkForce "runner";
               };
