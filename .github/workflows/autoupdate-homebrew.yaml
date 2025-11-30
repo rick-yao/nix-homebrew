@@ -1,6 +1,7 @@
 name: Update Homebrew Version
 
 on:
+  push:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
